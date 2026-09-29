@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
+import { isAuthenticated } from "../utils/auth";
 
 function Navbar() {
-    const token = localStorage.getItem("access");
+    const authenticated = isAuthenticated();
     const { pathname } = useLocation();
 
-    if (pathname.startsWith("/owner/") || pathname === "/add-property") {
+    if (pathname.startsWith("/owner/") || pathname.startsWith("/tenant") || pathname === "/add-property") {
         return null;
     }
 
@@ -22,7 +23,7 @@ function Navbar() {
                 <div className="flex items-center gap-6">
 
                     <Link
-                        to="/"
+                        to="/home"
                         className="hover:text-blue-600"
                     >
                         Home
@@ -35,7 +36,7 @@ function Navbar() {
                         Properties
                     </Link>
 
-                    {token ? (
+                    {authenticated ? (
                         <>
                             <Link
                                 to="/dashboard"

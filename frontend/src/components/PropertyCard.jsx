@@ -1,32 +1,11 @@
 import { Link } from "react-router-dom";
+import OwnerIcon from "./owner/OwnerIcon";
 
-function PropertyCard({ property }) {
-    return (
-        <div className="rounded-lg shadow-lg p-4">
-
-            <img
-                src={property.images[0]?.image}
-                alt={property.title}
-                className="w-full h-52 object-cover rounded"
-            />
-
-            <h2 className="text-xl font-bold mt-3">
-                {property.title}
-            </h2>
-
-            <p>{property.location}</p>
-
-            <p>₹{property.rent_price}/month</p>
-
-            <Link
-                to={`/properties/${property.id}`}
-                className="block mt-4 text-center bg-blue-600 text-white py-2 rounded"
-            >
-                View Details
-            </Link>
-
-        </div>
-    );
+function PropertyCard({ property, isFavorite = false, onFavorite }) {
+    const image = property?.images?.[0]?.image;
+    const status = String(property?.status || "AVAILABLE").toUpperCase();
+    const price = Number(property?.price || 0);
+    const unavailable = status !== "AVAILABLE";
+    return <article className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-amber-200 hover:shadow-lg"><div className="group relative h-48 overflow-hidden bg-zinc-100">{image ? <img src={image} alt={property.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="grid h-full place-items-center bg-gradient-to-br from-[#ead9ad] to-[#9e7a41] text-center text-sm font-semibold text-[#6c501e]"><span><OwnerIcon name="building" size={38} className="mx-auto mb-2" />Property image unavailable</span></div>}<span className={`absolute left-3 top-3 rounded-full px-2.5 py-1 text-xs font-bold shadow-sm ${status === "AVAILABLE" ? "bg-emerald-50 text-emerald-700" : "bg-white/90 text-amber-700"}`}>{status[0] + status.slice(1).toLowerCase()}</span>{onFavorite ? <button type="button" onClick={() => onFavorite(property.id)} aria-label={isFavorite ? "Remove from favorites" : "Save property"} aria-pressed={isFavorite} className={`absolute right-3 top-3 grid size-9 place-items-center rounded-full shadow-sm transition ${isFavorite ? "bg-[#1d1d1b] text-[#f1d88e]" : "bg-white/90 text-zinc-700 hover:bg-white"}`}><span aria-hidden="true" className="text-lg leading-none">{isFavorite ? "♥" : "♡"}</span></button> : null}</div><div className="p-5"><h2 className="truncate text-base font-bold text-zinc-900">{property?.title || "Untitled property"}</h2><p className="mt-1 flex items-center gap-1.5 truncate text-sm text-zinc-500"><OwnerIcon name="pin" size={15} />{property?.location || "Location not added"}</p><div className="mt-4 flex gap-3 text-xs font-semibold text-zinc-500"><span>{property?.bedrooms ?? "—"} Beds</span><span>{property?.bathrooms ?? "—"} Baths</span><span>{property?.area ? `${property.area} ft²` : "—"}</span></div><p className="mt-4 text-lg font-bold text-zinc-900">₹{price.toLocaleString("en-IN")}<span className="ml-1 text-sm font-medium text-zinc-400">/ month</span></p><Link to={`/properties/${property.id}`} className="mt-4 block rounded-xl bg-[#1d1d1b] py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#35332f]">{unavailable ? "View Property" : "View Property"}</Link></div></article>;
 }
-
 export default PropertyCard;

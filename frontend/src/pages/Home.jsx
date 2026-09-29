@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import publicApi from "../services/publicApi";
 
-import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import PropertyCard from "../components/PropertyCard";
 
@@ -10,17 +9,17 @@ function Home() {
     const [properties, setProperties] = useState([]);
 
     useEffect(() => {
+        async function fetchProperties() {
+            try {
+                const response = await publicApi.get("properties/");
+                setProperties(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
         fetchProperties();
     }, []);
-
-    async function fetchProperties() {
-        try {
-            const response = await publicApi.get("properties/");
-            setProperties(response.data);
-        } catch (error) {
-            console.error(error);
-        }
-    }
 
     return (
         <>

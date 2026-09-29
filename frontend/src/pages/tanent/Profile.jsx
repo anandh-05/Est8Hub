@@ -1,0 +1,10 @@
+import OwnerIcon from "../../components/owner/OwnerIcon";
+import useTenantData from "../../hooks/useTenantData";
+
+function Profile() {
+    const { profile, profileState, reloadProfile } = useTenantData({ loadProperties: false });
+    const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || profile?.username || "Tenant";
+    const details = [["Name", name, "user"], ["Email", profile?.email, "mail"], ["Phone", profile?.phone, "phone"], ["Address", profile?.address, "pin"], ["Role", profile?.role, "tenant"]];
+    return <div><p className="text-xs font-bold uppercase tracking-[0.16em] text-[#a87c23]">Tenant workspace</p><h1 className="mt-2 text-2xl font-bold tracking-[-0.04em] text-zinc-900 sm:text-3xl">Profile</h1><p className="mt-2 text-sm text-zinc-500">Your authenticated Est8Hub account details.</p>{profileState.error ? <div className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">Unable to refresh your profile.<button type="button" onClick={reloadProfile} className="font-semibold underline">Try again</button></div> : null}<section className="mt-7 max-w-3xl rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6"><div className="flex items-center gap-4 border-b border-zinc-100 pb-5"><span className="grid size-14 place-items-center rounded-2xl bg-[#1d1d1b] text-lg font-bold text-[#f1d88e]">{name.slice(0, 1).toUpperCase()}</span><div><h2 className="font-bold text-zinc-900">{name}</h2><p className="text-sm text-zinc-500">Tenant account</p></div></div><div className="mt-5 grid gap-3 sm:grid-cols-2">{details.map(([label, value, icon]) => <div key={label} className="flex gap-3 rounded-xl bg-zinc-50 p-3.5"><OwnerIcon name={icon} size={18} className="mt-0.5 text-[#9d741d]" /><div><p className="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-400">{label}</p><p className="mt-1 break-words text-sm font-semibold text-zinc-800">{value || "Not added yet"}</p></div></div>)}</div></section></div>;
+}
+export default Profile;

@@ -1,0 +1,2 @@
+function PropertySkeleton() { return <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white"><div className="h-48 animate-pulse bg-zinc-200" /><div className="space-y-3 p-5"><div className="h-4 w-2/3 animate-pulse rounded bg-zinc-200" /><div className="h-3 w-1/2 animate-pulse rounded bg-zinc-100" /><div className="h-3 w-full animate-pulse rounded bg-zinc-100" /><div className="h-10 animate-pulse rounded-xl bg-zinc-100" /></div></div>; }
+export default PropertySkeleton;

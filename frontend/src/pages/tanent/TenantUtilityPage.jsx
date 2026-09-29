@@ -1,0 +1,6 @@
+import TenantEmptyState from "../../components/tenant/TenantEmptyState";
+
+const content = { bookings: ["My Bookings", "No bookings yet", "Explore properties and schedule your first visit.", "calendar", "Browse Properties"], payments: ["Payments", "No payment history yet", "Your advance and rent payments will appear here once payment services are connected.", "wallet"], notifications: ["Notifications", "You’re all caught up", "Booking and payment updates will appear here.", "bell"], settings: ["Settings", "Settings are on their way", "Tenant workspace preferences will appear here when available.", "settings"] };
+
+function TenantUtilityPage({ type }) { const [title, emptyTitle, description, icon, actionLabel] = content[type] || content.settings; return <div><p className="text-xs font-bold uppercase tracking-[0.16em] text-[#a87c23]">Tenant workspace</p><h1 className="mt-2 text-2xl font-bold tracking-[-0.04em] text-zinc-900 sm:text-3xl">{title}</h1><p className="mb-7 mt-2 text-sm text-zinc-500">This section will use your live account activity when its API becomes available.</p><TenantEmptyState icon={icon} title={emptyTitle} description={description} actionLabel={actionLabel} /></div>; }
+export default TenantUtilityPage;

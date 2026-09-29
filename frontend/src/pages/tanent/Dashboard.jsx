@@ -1,10 +1,16 @@
-function TenantDashboard() {
-    return (
-        <div>
-            <h1>Tenant Dashboard</h1>
-            <p>Welcome Tenant</p>
-        </div>
-    );
-}
+import { Link } from "react-router-dom";
+import { useMemo, useState } from "react";
+import PropertyCard from "../../components/PropertyCard";
+import OwnerIcon from "../../components/owner/OwnerIcon";
+import TenantEmptyState from "../../components/tenant/TenantEmptyState";
+import TenantStatCard from "../../components/tenant/TenantStatCard";
+import useTenantData from "../../hooks/useTenantData";
 
+function TenantDashboard() {
+    const [search, setSearch] = useState("");
+    const { profile, properties, propertiesState, reloadProperties } = useTenantData();
+    const firstName = profile?.first_name || profile?.username || "there";
+    const recommended = useMemo(() => properties.filter((property) => `${property.title} ${property.location}`.toLowerCase().includes(search.toLowerCase())).slice(0, 3), [properties, search]);
+    return <div className="space-y-8"><header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-[#a87c23]">Tenant workspace</p><h1 className="mt-2 text-2xl font-bold tracking-[-0.045em] text-zinc-900 sm:text-3xl">Welcome back, {firstName}! <span aria-hidden="true">👋</span></h1><p className="mt-2 text-sm text-zinc-500">Find a place you&apos;ll love to call home.</p></div><Link to="/properties" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#1d1d1b] px-4 text-sm font-semibold text-white transition hover:bg-[#35332f]"><OwnerIcon name="building" size={18} className="text-[#e9c66f]" />Browse properties</Link></header><label className="relative block"><OwnerIcon name="search" size={20} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by location, property name..." className="h-13 w-full rounded-2xl border border-zinc-200 bg-white pl-12 pr-4 text-sm outline-none transition focus:border-[#d9ad45] focus:ring-4 focus:ring-[#d9ad45]/15" /></label><section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><TenantStatCard icon="calendar" value="—" label="Active bookings" hint="Booking API coming soon" /><TenantStatCard icon="clock" value="—" label="Upcoming visits" hint="Booking API coming soon" /><TenantStatCard icon="building" value="—" label="Saved properties" hint="Saved listings unavailable" /><TenantStatCard icon="wallet" value="—" label="Payments" hint="Payment API coming soon" /></section><section><div className="mb-4 flex items-end justify-between gap-4"><div><h2 className="text-lg font-bold text-zinc-900">Recommended Properties</h2><p className="mt-1 text-sm text-zinc-500">Fresh listings from Est8Hub.</p></div><Link to="/properties" className="text-sm font-semibold text-[#8b6615] hover:text-[#5e440c]">View all</Link></div>{propertiesState.loading ? <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{[1, 2, 3].map((item) => <div key={item} className="h-96 animate-pulse rounded-2xl bg-zinc-200" />)}</div> : propertiesState.error ? <div className="rounded-2xl border border-rose-100 bg-rose-50 p-6 text-center"><p className="font-semibold text-rose-800">Unable to load properties.</p><button type="button" onClick={reloadProperties} className="mt-3 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-rose-700">Try again</button></div> : recommended.length ? <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{recommended.map((property) => <PropertyCard key={property.id} property={property} />)}</div> : <TenantEmptyState icon="building" title="No matching properties" description="Try a different location or browse all available listings." actionLabel="Browse properties" />}</section><section><h2 className="mb-4 text-lg font-bold text-zinc-900">Upcoming Visits</h2><TenantEmptyState title="No upcoming visits" description="You haven’t scheduled a property visit yet." actionLabel="Explore Properties" /></section></div>;
+}
 export default TenantDashboard;

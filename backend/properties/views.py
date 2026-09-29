@@ -1,10 +1,10 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny,IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .models import Property
 from .serializers import PropertySerializer
 
-from user.models import UserProfile
+from user.permissions import IsOwner, IsVerifiedOwner
 
 
 class PropertyListView(generics.ListAPIView):
@@ -21,14 +21,14 @@ class PropertyDetailView(generics.RetrieveAPIView):
 
 class MyPropertiesView(generics.ListAPIView):
     serializer_class = PropertySerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsOwner]
 
     def get_queryset(self):
         return Property.objects.filter(owner=self.request.user.profile)
 
 class PropertyCreateView(generics.CreateAPIView):
     serializer_class = PropertySerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsVerifiedOwner]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user.profile)

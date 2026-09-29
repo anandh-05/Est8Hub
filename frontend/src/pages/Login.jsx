@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import publicApi from "../services/publicApi";
+import { getDashboardPath, logout, saveAuthSession } from "../utils/auth";
 
 function Login() {
 
@@ -10,6 +11,8 @@ function Login() {
         username: "",
         password: "",
     });
+    const [errorMessage, setErrorMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleChange = (e) => {
         setFormData({
@@ -21,28 +24,31 @@ function Login() {
     const handleSubmit = async (e) => {
 
         e.preventDefault();
+        setErrorMessage("");
+
+        if (!formData.username || !formData.password) {
+            setErrorMessage("Enter both your username and password.");
+            return;
+        }
+
+        setIsSubmitting(true);
 
         try {
-
             const response = await publicApi.post("login/", formData);
-
-            localStorage.setItem("access", response.data.access);
-            localStorage.setItem("refresh", response.data.refresh);
-            localStorage.setItem("user", JSON.stringify(response.data.user));
-
-            alert("Login Successful");
-
-            navigate("/dashboard");
+            saveAuthSession(response.data);
+            navigate(getDashboardPath(response.data.user), { replace: true });
 
         } catch (error) {
-
-            if (error.response) {
-                alert("Invalid Username or Password");
-                console.log(error.response.data);
-            } else {
-                console.log(error.message);
-            }
-
+            logout();
+            setErrorMessage(
+                error.response?.status === 401
+                    ? "Incorrect username or password."
+                    : error.response
+                        ? "We could not sign you in. Please try again."
+                        : "The server is unavailable. Please try again shortly."
+            );
+        } finally {
+            setIsSubmitting(false);
         }
 
     };
@@ -54,6 +60,8 @@ function Login() {
             <h1>Login</h1>
 
             <form onSubmit={handleSubmit}>
+
+                {errorMessage ? <p role="alert">{errorMessage}</p> : null}
 
                 <input
                     type="text"
@@ -73,8 +81,8 @@ function Login() {
 
                 <br /><br />
 
-                <button type="submit">
-                    Login
+                <button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "Logging in..." : "Login"}
                 </button>
 
             </form>
